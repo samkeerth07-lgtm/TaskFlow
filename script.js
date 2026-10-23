@@ -14,11 +14,25 @@ function saveTasks() {
 function renderTasks() {
   list.replaceChildren();
 
-  const visibleTasks = tasks.filter(task => {
-    if (currentFilter === "pending") return !task.completed;
-    if (currentFilter === "completed") return task.completed;
-    return true;
-  });
+  
+const searchTerm = document
+  .querySelector("#task-search")
+  .value.trim()
+  .toLowerCase();
+
+const visibleTasks = tasks.filter(task => {
+  const matchesSearch = task.title
+    .toLowerCase()
+    .includes(searchTerm);
+
+  const matchesFilter =
+    currentFilter === "all" ||
+    (currentFilter === "pending" && !task.completed) ||
+    (currentFilter === "completed" && task.completed);
+
+  return matchesSearch && matchesFilter;
+});
+
 
   visibleTasks.forEach(task => {
     const item = document.createElement("li");
@@ -79,5 +93,8 @@ document.querySelectorAll("[data-filter]").forEach(button => {
     renderTasks();
   });
 });
+
+document.querySelector("#task-search")
+  .addEventListener("input", renderTasks);
 
 renderTasks();
